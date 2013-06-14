@@ -223,10 +223,10 @@ function ciceroletters_admin_add() {
 		$cicero_official      = "";
 		if($cicero_country == "USA"){
 			$cicero_state    = mysql_real_escape_string(stripslashes($_POST['cicero_state_usa']));
-			$cicero_official = mysql_real_escape_string(stripslashes($_POST['cicero_official_usa']));
+			$cicero_official = mysql_real_escape_string(stripslashes(implode(",", $_POST['cicero_official_usa'])));
 		}elseif($cicero_country == "CAN"){
 			$cicero_state    = "";
-			$cicero_official = mysql_real_escape_string(stripslashes($_POST['cicero_official_can']));
+			$cicero_official = mysql_real_escape_string(stripslashes(implode(",", $_POST['cicero_official_can'])));
 		}
 		
 		//Validation
@@ -323,7 +323,7 @@ function ciceroletters_admin_add() {
 			   $('#cicero_official_usa_container').hide();
 			   $('#cicero_official_can_container').show();
 			}else{
-				 $('#cicero_state_usa_container').hide();
+			   $('#cicero_state_usa_container').hide();
 			   $('#cicero_official_usa_container').hide();
 			   $('#cicero_official_can_container').hide();
 			}
@@ -450,7 +450,7 @@ function ciceroletters_admin_add() {
 								</td>
 							</tr>
 							
-							<tr class="form-field" id="cicero_state_usa_container" class="cicero_sub_select" style="display:none;">
+							<tr class="form-field" id="cicero_state_usa_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "USA" ? "" : "style=\"display:none;\""); ?>>
 								<td valign="top" scope="row"><strong>State</strong></td>
 								<td>
 									<select name="cicero_state_usa" id="cicero_state_usa"> 
@@ -509,36 +509,32 @@ function ciceroletters_admin_add() {
 									</select>
 								</td>
 							</tr>
-							<tr class="form-field" id="cicero_official_usa_container" class="cicero_sub_select" style="display:none;">
+							<tr class="form-field" id="cicero_official_usa_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "USA" ? "" : "style=\"display:none;\""); ?>>
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
-									<select name="cicero_official_usa" id="cicero_official_usa"> 
-										<option value="">--</option>
-										<optgroup label="State">
-											<option value="STATE_UPPER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_UPPER" ? "selected=\"selected\"" : ""); ?>>Senate</option>  
-											<option value="STATE_LOWER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_LOWER" ? "selected=\"selected\"" : ""); ?>>Representative</option>  
-											<option value="STATE_EXEC:Lieutenant Governor" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_EXEC:Lieutenant Governor" ? "selected=\"selected\"" : ""); ?>>Lieutenant Governor</option>  
-											<option value="STATE_EXEC:Governor" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_EXEC:Governor" ? "selected=\"selected\"" : ""); ?>>Governor</option> 
-										</optgroup>
-										<optgroup label="National">
-											<option value="NATIONAL_LOWER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_LOWER" ? "selected=\"selected\"" : ""); ?>>Senate</option>  
-											<option value="NATIONAL_UPPER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_UPPER" ? "selected=\"selected\"" : ""); ?>>Representative</option> 
-											<option value="NATIONAL_EXEC:Vice President" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_EXEC:Vice President" ? "selected=\"selected\"" : ""); ?>>Vice President</option> 
-											<option value="NATIONAL_EXEC:President of the United States" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_EXEC:President of the United States" ? "selected=\"selected\"" : ""); ?>>President</option> 
-										</optgroup>
-									</select>
+								    
+								    <strong>State</strong><br />
+								    <input type="checkbox" value="STATE_UPPER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_UPPER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="STATE_LOWER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_LOWER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Representative<br />
+								    <input type="checkbox" value="STATE_EXEC:Lieutenant Governor" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_EXEC:Lieutenant Governor", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Lieutenant Governor<br />
+								    <input type="checkbox" value="STATE_EXEC:Governor" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_EXEC:Governor", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Governor<br />
+								    
+								    <strong>National</strong><br />
+								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="NATIONAL_LOWER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_LOWER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Representative<br />
+								    <input type="checkbox" value="NATIONAL_EXEC:Vice President" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_EXEC:Vice President", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Vice President<br />
+								    <input type="checkbox" value="NATIONAL_EXEC:President of the United States" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_EXEC:President of the United States", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> President<br />
+									
 								</td>
 							</tr>
 							
-							<tr class="form-field" id="cicero_official_can_container" class="cicero_sub_select" style="display:none;">
+							<tr class="form-field" id="cicero_official_can_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "CAN" ? "" : "style=\"display:none;\""); ?>>
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
-									<select name="cicero_official_can" id="cicero_official_can"> 
-										<option value="">--</option>
-										<optgroup label="National">
-											<option value="NATIONAL_UPPER" <?= (isset($_POST['cicero_official_can']) && $_POST['cicero_official_can'] == "NATIONAL_UPPER" ? "selected=\"selected\"" : ""); ?>>Senate</option> 
-										</optgroup>
-									</select>
+								    
+								    <strong>National</strong><br />
+								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_can[]" <?= (isset($_POST['cicero_official_can']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_can']) ? "checked=\"checked\"" : (in_array("NATIONAL_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+									
 								</td>
 							</tr>
 							
@@ -588,28 +584,28 @@ function ciceroletters_admin_edit() {
 			$errors = array();
 			$errors_str = "";
 			
-			$page_type 				= mysql_real_escape_string(stripslashes($_POST['page_type']));
-			$page_test 				= (isset($_POST['page_test']) ? mysql_real_escape_string(stripslashes($_POST['page_test'])) : "false");
-			$page_test_email 	= mysql_real_escape_string(stripslashes($_POST['page_test_email']));
-			$page_success 		= mysql_real_escape_string(stripslashes($_POST['page_success']));
-			$page_error 			= mysql_real_escape_string(stripslashes($_POST['page_error']));
+			$page_type           = mysql_real_escape_string(stripslashes($_POST['page_type']));
+			$page_test           = (isset($_POST['page_test']) ? mysql_real_escape_string(stripslashes($_POST['page_test'])) : "false");
+			$page_test_email     = mysql_real_escape_string(stripslashes($_POST['page_test_email']));
+			$page_success        = mysql_real_escape_string(stripslashes($_POST['page_success']));
+			$page_error          = mysql_real_escape_string(stripslashes($_POST['page_error']));
 			
-			$email_recipient 	= mysql_real_escape_string(stripslashes($_POST['email_recipient']));
-			$email_recipient_name 	= mysql_real_escape_string(stripslashes($_POST['email_recipient_name']));
-			$email_subject 		= mysql_real_escape_string(stripslashes($_POST['email_subject']));
-			$email_body 			= mysql_real_escape_string(stripslashes($_POST['email_body']));
-			$email_bcc_email 	= mysql_real_escape_string(stripslashes($_POST['email_bcc_email']));
-			$email_bcc_note 	= mysql_real_escape_string(stripslashes($_POST['email_bcc_note']));
+			$email_recipient     = mysql_real_escape_string(stripslashes($_POST['email_recipient']));
+			$email_recipient_name= mysql_real_escape_string(stripslashes($_POST['email_recipient_name']));
+			$email_subject       = mysql_real_escape_string(stripslashes($_POST['email_subject']));
+			$email_body          = mysql_real_escape_string(stripslashes($_POST['email_body']));
+			$email_bcc_email     = mysql_real_escape_string(stripslashes($_POST['email_bcc_email']));
+			$email_bcc_note      = mysql_real_escape_string(stripslashes($_POST['email_bcc_note']));
 			
-			$cicero_country 	= mysql_real_escape_string(stripslashes($_POST['cicero_country']));
-			$cicero_state 		= "";
-			$cicero_official	= "";
+			$cicero_country      = mysql_real_escape_string(stripslashes($_POST['cicero_country']));
+			$cicero_state        = "";
+			$cicero_official     = "";
 			if($cicero_country == "USA"){
-				$cicero_state 		= mysql_real_escape_string(stripslashes($_POST['cicero_state_usa']));
-				$cicero_official 	= mysql_real_escape_string(stripslashes($_POST['cicero_official_usa']));
+				$cicero_state       = mysql_real_escape_string(stripslashes($_POST['cicero_state_usa']));
+				$cicero_official    = mysql_real_escape_string(stripslashes(implode(",", $_POST['cicero_official_usa'])));
 			}elseif($cicero_country == "CAN"){
-				$cicero_state 		= "";
-				$cicero_official 	= mysql_real_escape_string(stripslashes($_POST['cicero_official_can']));
+				$cicero_state       = "";
+				$cicero_official    = mysql_real_escape_string(stripslashes(implode(",", $_POST['cicero_official_can'])));
 			}
 			
 			//Validation
@@ -652,22 +648,22 @@ function ciceroletters_admin_edit() {
 				ciceroletters_install();
 				
 				$wpdb->query("UPDATE `".CICEROLETTERS_DB."` SET  
-				`type` 						= '$page_type',
-				`test` 						= '$page_test',
+				`type`                  = '$page_type',
+				`test`                  = '$page_test',
 				`test_email` 			= '$page_test_email',
-				`success_message` = '$page_success',
-				`error_message` 	= '$page_error',
-				`recipient` 			= '$email_recipient',
-				`recipient_name` 	= '$email_recipient_name',
-				`subject` 				= '$email_subject',
-				`body` 						= '$email_body',
-				`bcc_email` 			= '$email_bcc_email',
-				`bcc_note` 				= '$email_bcc_note',
-				`country` 				= '$cicero_country',
-				`state` 					= '$cicero_state',
-				`official` 				= '$cicero_official',
-				`updated` 				= NOW( ) ,
-				`created` 				= NOW( ) 
+				`success_message`       = '$page_success',
+				`error_message`         = '$page_error',
+				`recipient`             = '$email_recipient',
+				`recipient_name`        = '$email_recipient_name',
+				`subject`               = '$email_subject',
+				`body`                  = '$email_body',
+				`bcc_email`             = '$email_bcc_email',
+				`bcc_note`              = '$email_bcc_note',
+				`country`               = '$cicero_country',
+				`state`                 = '$cicero_state',
+				`official`              = '$cicero_official',
+				`updated`               = NOW( ) ,
+				`created`               = NOW( ) 
 				WHERE `id` = ".mysql_real_escape_string($_GET['id']).";");
 					
 				$success_message = "Letter updated!";
@@ -681,7 +677,11 @@ function ciceroletters_admin_edit() {
 		
 	}
 	
+	// Get letter
 	$letter = $wpdb->get_row("SELECT * FROM ".CICEROLETTERS_DB." WHERE `id` = ".mysql_real_escape_string($_GET['id'])." LIMIT 1;");
+	
+	// Fix officials
+	$letter->official = explode(",", $letter->official);
 
 	?>	
 		
@@ -694,9 +694,9 @@ function ciceroletters_admin_edit() {
 			var email_type_select_value = $(this).find('option:selected').val();
 						
 			if(email_type_select_value == "manual") {
-			  $('#email_recipient_container').show();
-			  $('#email_recipient_name_container').show();
-			  $('.cicero_options_box').hide();
+                $('#email_recipient_container').show();
+                $('#email_recipient_name_container').show();
+                $('.cicero_options_box').hide();
 			}else{
 				$('#email_recipient_container').hide();
 				$('#email_recipient_name_container').hide();
@@ -709,17 +709,17 @@ function ciceroletters_admin_edit() {
 		$('#cicero_country').change(function() {
 			var cicero_country_select_value = $(this).find('option:selected').val();
 			if(cicero_country_select_value == "USA") {
-			   $('#cicero_official_can_container').hide();
-			   $('#cicero_state_usa_container').show();
-			   $('#cicero_official_usa_container').show();
+                $('#cicero_official_can_container').hide();
+                $('#cicero_state_usa_container').show();
+                $('#cicero_official_usa_container').show();
 			}else if(cicero_country_select_value == "CAN") {
-			   $('#cicero_state_usa_container').hide();
-			   $('#cicero_official_usa_container').hide();
-			   $('#cicero_official_can_container').show();
+                $('#cicero_state_usa_container').hide();
+                $('#cicero_official_usa_container').hide();
+                $('#cicero_official_can_container').show();
 			}else{
-				 $('#cicero_state_usa_container').hide();
-			   $('#cicero_official_usa_container').hide();
-			   $('#cicero_official_can_container').hide();
+                $('#cicero_state_usa_container').hide();
+                $('#cicero_official_usa_container').hide();
+                $('#cicero_official_can_container').hide();
 			}
 		});
 		
@@ -846,6 +846,7 @@ function ciceroletters_admin_edit() {
 							<tr class="form-field" id="cicero_state_usa_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "USA" ? "" : ($letter->country == "USA" ? "" : "style=\"display:none;\"")); ?>>
 								<td valign="top" scope="row"><strong>State</strong></td>
 								<td>
+								
 									<select name="cicero_state_usa" id="cicero_state_usa"> 
 										<option value="">--</option> 
 										<option value="AL" <?= (isset($_POST['cicero_state_usa']) && $_POST['cicero_state_usa'] == "AL" ? "selected=\"selected\"" : ($letter->state == "AL" ? "selected=\"selected\"" : "")); ?>>Alabama</option> 
@@ -905,33 +906,29 @@ function ciceroletters_admin_edit() {
 							<tr class="form-field" id="cicero_official_usa_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "USA" ? "" : ($letter->country == "USA" ? "" : "style=\"display:none;\"")); ?>>
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
-									<select name="cicero_official_usa" id="cicero_official_usa"> 
-										<option value="">--</option>
-										<optgroup label="State">
-											<option value="STATE_UPPER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_UPPER" ? "selected=\"selected\"" : ($letter->official == "STATE_UPPER" ? "selected=\"selected\"" : "")); ?>>Senate</option>  
-											<option value="STATE_LOWER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_LOWER" ? "selected=\"selected\"" : ($letter->official == "STATE_LOWER" ? "selected=\"selected\"" : "")); ?>>Representative</option>  
-											<option value="STATE_EXEC:Lieutenant Governor" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_EXEC:Lieutenant Governor" ? "selected=\"selected\"" : ($letter->official == "STATE_EXEC:Lieutenant Governor" ? "selected=\"selected\"" : "")); ?>>Lieutenant Governor</option>  
-											<option value="STATE_EXEC:Governor" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "STATE_EXEC:Governor" ? "selected=\"selected\"" : ($letter->official == "STATE_EXEC:Governor" ? "selected=\"selected\"" : "")); ?>>Governor</option> 
-										</optgroup>
-										<optgroup label="National">
-											<option value="NATIONAL_UPPER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_UPPER" ? "selected=\"selected\"" : ($letter->official == "NATIONAL_UPPER" ? "selected=\"selected\"" : "")); ?>>Senate</option>  
-											<option value="NNATIONAL_LOWER" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_LOWER" ? "selected=\"selected\"" : ($letter->official == "NATIONAL_LOWER" ? "selected=\"selected\"" : "")); ?>>Representative</option> 
-											<option value="NATIONAL_EXEC:Vice President" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_EXEC:Vice President" ? "selected=\"selected\"" : ($letter->official == "NATIONAL_EXEC:Vice President" ? "selected=\"selected\"" : "")); ?>>Vice President</option> 
-											<option value="NATIONAL_EXEC:President of the United States" <?= (isset($_POST['cicero_official_usa']) && $_POST['cicero_official_usa'] == "NATIONAL_EXEC:President of the United States" ? "selected=\"selected\"" : ($letter->official == "NATIONAL_EXEC:President of the United States" ? "selected=\"selected\"" : "")); ?>>President</option> 
-										</optgroup>
-									</select>
+								    
+								    <strong>State</strong><br />
+								    <input type="checkbox" value="STATE_UPPER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_UPPER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("STATE_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="STATE_LOWER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_LOWER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("STATE_LOWER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Representative<br />
+								    <input type="checkbox" value="STATE_EXEC:Lieutenant Governor" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_EXEC:Lieutenant Governor", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("STATE_EXEC:Lieutenant Governor", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Lieutenant Governor<br />
+								    <input type="checkbox" value="STATE_EXEC:Governor" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("STATE_EXEC:Governor", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("STATE_EXEC:Governor", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Governor<br />
+								    
+								    <strong>National</strong><br />
+								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("NATIONAL_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="NATIONAL_LOWER" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_LOWER", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("NATIONAL_LOWER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Representative<br />
+								    <input type="checkbox" value="NATIONAL_EXEC:Vice President" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_EXEC:Vice President", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("NATIONAL_EXEC:Vice President", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Vice President<br />
+								    <input type="checkbox" value="NATIONAL_EXEC:President of the United States" name="cicero_official_usa[]" <?= (isset($_POST['cicero_official_usa']) && in_array("NATIONAL_EXEC:President of the United States", $_POST['cicero_official_usa']) ? "checked=\"checked\"" : (in_array("NATIONAL_EXEC:President of the United States", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> President<br />
+									
 								</td>
 							</tr>
 							
 							<tr class="form-field" id="cicero_official_can_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "CAN" ? "" : ($letter->country == "CAN" ? "" : "style=\"display:none;\"")); ?>>
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
-									<select name="cicero_official_can" id="cicero_official_can"> 
-										<option value="">--</option>
-										<optgroup label="National">
-											<option value="NATIONAL_UPPER" <?= (isset($_POST['cicero_official_can']) && $_POST['cicero_official_can'] == "NATIONAL_UPPER" ? "selected=\"selected\"" : ($letter->official == "NATIONAL_UPPER" ? "selected=\"selected\"" : "")); ?>>Senate</option> 
-										</optgroup>
-									</select>
+								
+								    <strong>National</strong><br />
+								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_can[]" <?= (isset($_POST['cicero_official_can']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_can']) ? "checked=\"checked\"" : (in_array("NATIONAL_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+									
 								</td>
 							</tr>
 							
@@ -993,6 +990,9 @@ function ciceroletters_shortcode_func( $atts ) {
 	
 	// Get letter
 	$letter = $wpdb->get_row("SELECT * FROM ".CICEROLETTERS_DB." WHERE `id` = ".$id." LIMIT 1;");
+	
+	// Fix officials
+	$letter->official = explode(",", $letter->official);
 	
 	// Enqueue scrips
 	wp_enqueue_script('ciceroletters-jquery-docready', plugins_url('/_js/jquery.docready.php', __FILE__), array('jquery'));
@@ -1113,7 +1113,7 @@ function ciceroletters_shortcode_func( $atts ) {
 		
 		<div id='ciceroletters_successerror_container'></div>
 		
-		<div id='ciceroletters_loading_container'>
+		<div id='ciceroletters_loading_container' style='display:none;'>
 			<img src='".plugins_url('/_img/ajax-loader.gif', __FILE__)."' alt='Loading' />
 		</div>
 		";

@@ -5,7 +5,7 @@
 //error_reporting(E_ALL);
 //ini_set('display_errors', '1');
 
-// Include WordPress 
+// Include WordPress
 define('WP_USE_THEMES', false);
 require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
 //require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
@@ -29,12 +29,16 @@ function get_response($url, $postfields=''){
 global $wpdb;
 $letter = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."ciceroletters WHERE `id` = ".mysql_real_escape_string($_POST['letterid'])." LIMIT 1;");
 
+// Fix officials
+$letter->official = explode(",", $letter->official);
+
 // Check if its a test, otherwise run cicero
 $officials_emails = array();
 $officials_names = array();
 $officials_state_same = true;
+$officials_state_found = true;
 if($letter->test == "true"){
-	
+
 	$officials_emails[] = $letter->test_email;
 	$officials_names[] = "Test Name";
 
@@ -47,63 +51,59 @@ if($letter->test == "true"){
 	//$search_loc = '15515+Mink+Rd+NE,+Woodinville,+WA+98077';
 	//$search_loc = '642+Johnson+Street,+Victoria,+BC+V8W+1M6,+Canada';
 	$search_loc = str_replace(" ", "+", $_POST['address']);
-	
+
 	// Obtain a token:
 	$response = get_response('http://cicero.azavea.com/v3.1/token/new.json', "username=$username&password=$password");
-	
+
 	// Check to see if the token was obtained okay:
 	if($response->success != True):
 	    exit('Could not obtain token.');
 	endif;
-	
+
 	// The token and user obtained are used for other API calls:
 	$token = $response->token;
 	$user = $response->user;
-	
-	// Get an official query response
-	$official_level = explode(":", $letter->official);
-	$official_district_type = $official_level[0];
-	$official_role = (isset($official_level[1]) ? $official_level[1] : "");
-	
-	$query_string = "search_loc=$search_loc&district_type=$official_district_type" . (!empty($official_role) ? "&role=$official_role" : "") . "&token=$token&user=$user&format=json";
-	$official_response = get_response("http://cicero.azavea.com/v3.1/official?$query_string");
-	
-	if(count($official_response->response->results->candidates) == 0):
-	
-		echo 'No location found for the given address.';
-		
-	endif;
-	
-	// Print information for each official:
-	foreach($official_response->response->results->candidates[0]->officials as $o):
-	
-		// Get state district
-		if(!isset($o->office->district->state) || $o->office->district->state != $letter->state)
-			$officials_state_same = false;
-			
-		// Get name
-		$officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
-		
-		// Get email and check for validity
-	  foreach($o->email_addresses as $e):
-	    if(preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $e) > 0){
-		    $officials_emails[] = $e;
-		    break;
-		  }
-	  endforeach;
-	
-	endforeach;
+
+	// Loop through officials if theres multiple
+	if(count($letter->official) > 0){
+    	foreach($letter->official as $official_position){
+
+        	// Get an official query response
+        	$official_level = explode(":", $official_position);
+        	$official_district_type = $official_level[0];
+        	$official_role = (isset($official_level[1]) ? $official_level[1] : "");
+
+        	$query_string = "search_loc=$search_loc&district_type=$official_district_type" . (!empty($official_role) ? "&role=$official_role" : "") . "&token=$token&user=$user&format=json";
+        	$official_response = get_response("http://cicero.azavea.com/v3.1/official?$query_string");
+
+        	if(count($official_response->response->results->candidates) > 0){
+
+        	    //$officials_state_found = false;
+
+        	    // Print information for each official:
+                foreach($official_response->response->results->candidates[0]->officials as $o){
+
+                    // Get state district
+                    if(isset($o->office->district->state) && $o->office->district->state == $letter->state){
+
+                    	//$officials_state_same = false;
+
+                        // Get name and email and check for validity
+                        foreach($o->email_addresses as $e){
+                            $officials_emails[] = $e;
+                            $officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
+                            break;
+                        }
+                    }
+                }
+        	}
+    	}
+    }
 
 }
-  
+
 // If email is available continue
-if(!$officials_state_same){
-?>
-	
-	<p>Unfortunately officials matching your address were found.</p>
-	
-<?php
-}elseif(!empty($officials_emails)){
+if(!empty($officials_emails)){
 
 	// Get all emails
 	$official_emails_list = implode(",", $officials_emails);
@@ -111,7 +111,7 @@ if(!$officials_state_same){
 	?>
 
 	<form id="ciceroletters_email_form" method="post">
-	
+
 		<!-- Form hidden info -->
 		<?php
 		if($letter->test == "true")
@@ -122,7 +122,7 @@ if(!$officials_state_same){
 			echo "<input type='hidden' id='ciceroletters_email_bcc_email' name='ciceroletters_email_bcc_email' value='".$letter->bcc_email."' />";
 		?>
 		<input type='hidden' id='ciceroletters_email_to_names' name='ciceroletters_email_to_names' value='<?= $official_names_list; ?>' />
-		
+
 		<strong>Email Information</strong>
 		<br /><br />
 		<table>
@@ -148,8 +148,8 @@ if(!$officials_state_same){
 				</td>
 			</tr>
 		</table>
-		<br /><br />		
-		
+		<br /><br />
+
 		<strong>Sender Information</strong>
 		<br /><br />
 		<table>
@@ -178,18 +178,20 @@ if(!$officials_state_same){
 				<td><input type='text' id='ciceroletters_email_city' name='ciceroletters_email_city' value='' /></td>
 			</tr>
 		</table>
+
 		<?php
 		if($letter->bcc_email != "" && $letter->bcc_note != "")
 			echo "<p>* - ".$letter->bcc_note."</p>";
 		?>
+
 		<br /><br />
-		
+
 		<input type="submit" name="ciceroletters_email_submit" id="ciceroletters_email_submit" value="Send Email" />
-		
+
 	</form>
 
 <?php }else{ ?>
-	
+
 	<p>Unfortunately no emails were found relating to the person in that position.</p>
 
 <?php } ?>
