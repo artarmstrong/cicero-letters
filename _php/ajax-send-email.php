@@ -1,29 +1,15 @@
 <?php
 
 // Error Reporting
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+//error_reporting(E_ALL);
+//ini_set('display_errors', '1');
 
 // Include WordPress
 define('WP_USE_THEMES', false);
 require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
-//require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 // Globals
 global $wpdb;
-
-// Test info
-/*
-$_POST['letterid'] = 2;
-$_POST['names'] = "Art, Sam";
-$_POST['to'] = "art@avelient.com, arthurjarmstrong@gmail.com";
-$_POST['email'] = "art@avelient.com";
-$_POST['subject'] = "Test Subject";
-$_POST['body'] = "Test Body";
-$_POST['fname'] = "Art";
-$_POST['lname'] = "Armstrong";
-$_POST['bccemail'] = "";
-*/
 
 // Get letter
 $letter = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."ciceroletters WHERE `id` = ".mysql_real_escape_string($_POST['letterid'])." LIMIT 1;");
@@ -42,8 +28,8 @@ if($letter != null) {
         // Sent to multiple people
         $mail_sent = false;
         $recipients = array();
-        for($i = 0; $i < count($to); $i++){
-            $recipients[$names[$i]] = $to[$i];
+        for($i = 0; $i < count($names); $i++){
+            $recipients[$names[$i]] = ($letter->test == "true" ? $to[0] : $to[$i]);
         }
         foreach($recipients as $recipient_name => $recipient_email){
             $body = "
