@@ -1,2 +1,2 @@
-cicero-letters-plugin
+cicero-letters
 =====================
