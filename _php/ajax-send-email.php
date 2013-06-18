@@ -32,10 +32,12 @@ if($letter != null) {
             $recipients[$names[$i]] = ($letter->test == "true" ? $to[0] : $to[$i]);
         }
         foreach($recipients as $recipient_name => $recipient_email){
+	    $recipient_name_out = "";
+	    $recipient_name_out = $recipient_name;
             $body = "
         	<html>
         	<body>
-        	<p>Dear ".stripslashes($recipient_name)."</p>
+        	<p>Dear ".stripslashes($recipient_name_out)."</p>
         	<p>".str_replace("\n", "<br />", stripslashes($_POST['body']))."</p>
         	<p>Sincerely,<br />".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."</p>
         	</body>
