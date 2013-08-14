@@ -7,8 +7,8 @@
 
 // Include WordPress
 define('WP_USE_THEMES', false);
-require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
-//require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
+//require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
+require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 // Function to do our API calls (returns object made from JSON)
 function get_response($url, $postfields=''){
@@ -66,40 +66,39 @@ if($letter->test == "true"){
 
 	// Loop through officials if theres multiple
 	if(count($letter->official) > 0){
-    	foreach($letter->official as $official_position){
+  	foreach($letter->official as $official_position){
 
-        	// Get an official query response
-        	$official_level = explode(":", $official_position);
-        	$official_district_type = $official_level[0];
-        	$official_role = (isset($official_level[1]) ? $official_level[1] : "");
+    	// Get an official query response
+    	$official_level = explode(":", $official_position);
+    	$official_district_type = $official_level[0];
+    	$official_role = (isset($official_level[1]) ? $official_level[1] : "");
 
-        	$query_string = "search_loc=$search_loc&district_type=$official_district_type" . (!empty($official_role) ? "&role=$official_role" : "") . "&token=$token&user=$user&format=json";
-        	$official_response = get_response("http://cicero.azavea.com/v3.1/official?$query_string");
+    	$query_string = "search_loc=$search_loc&district_type=$official_district_type" . (!empty($official_role) ? "&role=$official_role" : "") . "&token=$token&user=$user&format=json";
+    	$official_response = get_response("http://cicero.azavea.com/v3.1/official?$query_string");
 
-        	if(count($official_response->response->results->candidates) > 0){
+    	if(count($official_response->response->results->candidates) > 0){
 
-        	    //$officials_state_found = false;
+  	    //$officials_state_found = false;
 
-        	    // Print information for each official:
-                foreach($official_response->response->results->candidates[0]->officials as $o){
+  	    // Print information for each official:
+        foreach($official_response->response->results->candidates[0]->officials as $o){
 
-                    // Get state district
-                    if(isset($o->office->district->state) && $o->office->district->state == $letter->state){
+          // Get state district
+          if(isset($o->office->district->state) && $o->office->district->state == $letter->state){
 
-                    	//$officials_state_same = false;
+          	//$officials_state_same = false;
 
-                        // Get name and email and check for validity
-                        foreach($o->email_addresses as $e){
-                            $officials_emails[] = $e;
-                            $officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
-                            break;
-                        }
-                    }
-                }
-        	}
+            // Get name and email and check for validity
+            foreach($o->email_addresses as $e){
+              $officials_emails[] = $e;
+              $officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
+              break;
+            }
+          }
+        }
     	}
-    }
-
+  	}
+  }
 }
 
 // If email is available continue
@@ -107,7 +106,7 @@ if(!empty($officials_emails)){
 
 	// Get all emails
 	$official_emails_list = implode(",", $officials_emails);
-	$official_names_list = implode(" / ", $officials_names);
+	$official_names_list = implode(", ", $officials_names);
 	?>
 
 	<form id="ciceroletters_email_form" method="post">

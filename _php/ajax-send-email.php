@@ -6,7 +6,8 @@
 
 // Include WordPress
 define('WP_USE_THEMES', false);
-require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
+//require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
+require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 // Globals
 global $wpdb;
@@ -25,44 +26,48 @@ if($letter != null) {
     $subject = mysql_real_escape_string($_POST['subject']);
     if( (is_array($to) && count($to) > 0) && (is_array($names) && count($names) > 0) ){
 
-        // Sent to multiple people
-        $mail_sent = false;
-        $recipients = array();
-        for($i = 0; $i < count($names); $i++){
-            $recipients[$names[$i]] = ($letter->test == "true" ? $to[0] : $to[$i]);
-        }
-        foreach($recipients as $recipient_name => $recipient_email){
-	    $recipient_name_out = "";
-	    $recipient_name_out = $recipient_name;
-            $body = "
-        	<html>
-        	<body>
-        	<p>Dear ".stripslashes($recipient_name_out)."</p>
-        	<p>".str_replace("\n", "<br />", stripslashes($_POST['body']))."</p>
-        	<p>Sincerely,<br />".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."</p>
-        	</body>
-        	</html>";
-            $headers  = "From: $from\r\n";
-            $headers .= "Content-type: text/html\r\n";
-            $headers .= "Bcc: " . $_POST['bccemail'] . "\r\n";
+      // Send to multiple people
+      $mail_sent = false;
+      $recipients = array();
+      for($i = 0; $i < count($names); $i++){
+          $recipients[trim($names[$i])] = ($letter->test == "true" ? $to[0] : $to[$i]);
+      }
+      foreach($recipients as $recipient_name => $recipient_email){
+	      $recipient_name_out = "";
+        $recipient_name_out = $recipient_name;
+        $body = "
+      	<html>
+      	<body>
+      	<p>Dear ".stripslashes($recipient_name_out)."</p>
+      	<p>".str_replace("\n", "<br />", stripslashes($_POST['body']))."</p>
+      	<p>Sincerely,<br />".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."</p>
+      	</body>
+      	</html>";
+        $headers  = "From: $from\r\n";
+        $headers .= "Content-type: text/html\r\n";
+        $headers .= "Bcc: " . $_POST['bccemail'] . "\r\n";
 
-            // Now lets send the email.
-            if(mail($recipient_email, $subject, $body, $headers)){
-                $mail_sent = true;
-            }
-        }
+        // Now lets send the email.
+        if(mail($recipient_email, $subject, $body, $headers)){
+          $mail_sent = true;
 
-        // Now lets check the success.
-        if($mail_sent == true){
-            echo $letter->success_message;
-        }else{
-            echo $letter->error_message;
+          // DEBUG
+          //echo "Mail sent to: $recipient_name_out - $recipient_email<br />";
+
         }
+      }
+
+      // Now lets check the success.
+      if($mail_sent == true){
+          echo $letter->success_message;
+      }else{
+          echo $letter->error_message;
+      }
 
     }else{
 
-        // Send to single person
-        $body = "
+      // Send to single person
+      $body = "
     	<html>
     	<body>
     	<p>Dear ".stripslashes($names)."</p>
@@ -70,21 +75,21 @@ if($letter != null) {
     	<p>Sincerely,<br />".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."</p>
     	</body>
     	</html>";
-        $headers  = "From: $from\r\n";
-        $headers .= "Content-type: text/html\r\n";
-        $headers .= "Bcc: " . $_POST['bccemail'] . "\r\n";
+      $headers  = "From: $from\r\n";
+      $headers .= "Content-type: text/html\r\n";
+      $headers .= "Bcc: " . $_POST['bccemail'] . "\r\n";
 
-        // Now lets send the email.
-        if(mail($to, $subject, $body, $headers)){
-            echo $letter->success_message;
-        }else{
-            echo $letter->error_message;
-        }
+      // Now lets send the email.
+      if(mail($to, $subject, $body, $headers)){
+          echo $letter->success_message;
+      }else{
+          echo $letter->error_message;
+      }
     }
 
 }else{
 
-    echo "The letter could not be sent.";
+  echo "The letter could not be sent.";
 
 }
 
