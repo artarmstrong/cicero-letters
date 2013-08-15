@@ -80,8 +80,8 @@ function ciceroletters_uninstall() {
 	global $wpdb;
 
 	//Drop Documents table
-  //$structure = "DROP TABLE ".CICEROLETTERS_DB.";";
-  //$wpdb->query($structure);
+  $structure = "DROP TABLE ".CICEROLETTERS_DB.";";
+  $wpdb->query($structure);
 
 }
 
