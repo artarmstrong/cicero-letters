@@ -33,6 +33,7 @@ $letter = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."ciceroletters WHERE `id
 $letter->official = explode(",", $letter->official);
 
 // Check if its a test, otherwise run cicero
+$officials_array = array();
 $officials_emails = array();
 $officials_names = array();
 $officials_state_same = true;
@@ -73,10 +74,18 @@ if($letter->test == "true"){
     	$official_district_type = $official_level[0];
     	$official_role = (isset($official_level[1]) ? $official_level[1] : "");
 
+      // Setup query
     	$query_string = "search_loc=$search_loc&district_type=$official_district_type" . (!empty($official_role) ? "&role=$official_role" : "") . "&token=$token&user=$user&format=json";
     	$official_response = get_response("http://cicero.azavea.com/v3.1/official?$query_string");
 
-    	if(count($official_response->response->results->candidates) > 0){
+    	// DEBUG
+    	//echo $query_string."<br />";
+    	//echo "<pre>";
+    	//print_r($official_response->response->results->candidates[0]->officials);
+    	//echo "</pre>";
+
+    	//if(count($official_response->response->results->candidates) > 0){
+    	if(count($official_response->response->results->candidates[0]->officials) > 0){
 
   	    //$officials_state_found = false;
 
@@ -84,14 +93,21 @@ if($letter->test == "true"){
         foreach($official_response->response->results->candidates[0]->officials as $o){
 
           // Get state district
-          if(isset($o->office->district->state) && $o->office->district->state == $letter->state){
+          if($letter->country == "USA-NA" || (isset($o->office->district->state) && $o->office->district->state == $letter->state)){
 
           	//$officials_state_same = false;
 
             // Get name and email and check for validity
             foreach($o->email_addresses as $e){
+              $officials_array[$e] = $o->office->title." ".$o->first_name." ".$o->last_name;
               $officials_emails[] = $e;
               $officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
+
+              // DEBUG
+              //echo "<pre>";
+              //print_r($officials_array);
+              //echo "</pre>";
+
               break;
             }
           }
