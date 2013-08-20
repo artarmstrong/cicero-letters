@@ -507,6 +507,12 @@ function ciceroletters_admin_home() {
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
 
+								    <strong>State</strong><br />
+								    <input type="checkbox" value="STATE_UPPER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_UPPER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="STATE_LOWER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_LOWER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_LOWER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Representative<br />
+								    <input type="checkbox" value="STATE_EXEC:Lieutenant Governor" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_EXEC:Lieutenant Governor", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_EXEC:Lieutenant Governor", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Lieutenant Governor<br />
+								    <input type="checkbox" value="STATE_EXEC:Governor" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_EXEC:Governor", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_EXEC:Governor", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Governor<br />
+
 								    <strong>National</strong><br />
 								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("NATIONAL_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
 								    <input type="checkbox" value="NATIONAL_LOWER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("NATIONAL_LOWER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("NATIONAL_LOWER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Representative<br />
@@ -967,6 +973,12 @@ function ciceroletters_admin_add() {
 							<tr class="form-field" id="cicero_official_usana_container" class="cicero_sub_select" <?= (isset($_POST['cicero_country']) && $_POST['cicero_country'] == "USA-NA" ? "" : "style=\"display:none;\""); ?>>
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
+
+								    <strong>State</strong><br />
+								    <input type="checkbox" value="STATE_UPPER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_UPPER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="STATE_LOWER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_LOWER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Representative<br />
+								    <input type="checkbox" value="STATE_EXEC:Lieutenant Governor" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_EXEC:Lieutenant Governor", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Lieutenant Governor<br />
+								    <input type="checkbox" value="STATE_EXEC:Governor" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_EXEC:Governor", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Governor<br />
 
 								    <strong>National</strong><br />
 								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Senate<br />
