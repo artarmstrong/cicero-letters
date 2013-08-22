@@ -507,7 +507,7 @@ function ciceroletters_admin_home() {
 								<td valign="top" scope="row"><strong>Official</strong></td>
 								<td>
 
-								    <strong>State</strong><br />
+                    <strong>State</strong><br />
 								    <input type="checkbox" value="STATE_UPPER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_UPPER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
 								    <input type="checkbox" value="STATE_LOWER" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_LOWER", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_LOWER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Representative<br />
 								    <input type="checkbox" value="STATE_EXEC:Lieutenant Governor" name="cicero_official_usa_na[]" <?= (isset($_POST['cicero_official_usa_na']) && in_array("STATE_EXEC:Lieutenant Governor", $_POST['cicero_official_usa_na']) ? "checked=\"checked\"" : (in_array("STATE_EXEC:Lieutenant Governor", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Lieutenant Governor<br />
@@ -994,7 +994,7 @@ function ciceroletters_admin_add() {
 								<td>
 
 								    <strong>National</strong><br />
-								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_can[]" <?= (isset($_POST['cicero_official_can']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_can']) ? "checked=\"checked\"" : (in_array("NATIONAL_UPPER", $letter->official) ? "checked=\"checked\"" : "")); ?> style="width:20px;margin-left:15px;" /> Senate<br />
+								    <input type="checkbox" value="NATIONAL_UPPER" name="cicero_official_can[]" <?= (isset($_POST['cicero_official_can']) && in_array("NATIONAL_UPPER", $_POST['cicero_official_can']) ? "checked=\"checked\"" : ""); ?> style="width:20px;margin-left:15px;" /> Senate<br />
 
 								</td>
 							</tr>
@@ -1050,6 +1050,9 @@ function ciceroletters_shortcode_func( $atts ) {
 	// Globals
 	global $wpdb;
 
+  // Variables
+  $output_message = "";
+
 	// Extract data
 	extract( shortcode_atts( array(
 		'id' => ''
@@ -1059,13 +1062,16 @@ function ciceroletters_shortcode_func( $atts ) {
 	$letter = $wpdb->get_row("SELECT * FROM ".CICEROLETTERS_DB." WHERE `id` = ".$id." LIMIT 1;");
 
 	// Fix officials
-	$letter->official = explode(",", $letter->official);
+	if(isset($letter->official))
+	  $letter->official = explode(",", $letter->official);
+  else
+    $letter->official = array();
 
 	// Enqueue scrips
 	wp_enqueue_script('ciceroletters-jquery-docready', plugins_url('/_js/jquery.docready.php', __FILE__), array('jquery'));
 
 	// Check for manual or cicero
-	if($letter->type == "manual"){
+	if(isset($letter->type) && $letter->type == "manual"){
 
 		ob_start();
 		?>
