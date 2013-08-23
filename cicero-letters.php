@@ -64,7 +64,7 @@ function ciceroletters_install() {
     `body` text NOT NULL,
     `bcc_email` varchar(255) NOT NULL,
     `bcc_note` varchar(255) NOT NULL,
-    `country` enum('USA','CAN') NOT NULL,
+    `country` enum('USA','CAN', 'USA-NA') NOT NULL,
     `state` varchar(2) NOT NULL,
     `official` varchar(255) NOT NULL,
     `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
