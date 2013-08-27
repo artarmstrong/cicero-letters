@@ -150,14 +150,14 @@ if(!empty($officials_emails)){
 				<td>
 					Subject
 					<br />
-					<input type='text' id="ciceroletters_email_subject" name='ciceroletters_email_subject' style="width:200px;" value='<?= $letter->subject; ?>' />
+					<input type='text' id="ciceroletters_email_subject" name='ciceroletters_email_subject' style="width:200px;" value='<?= htmlspecialchars($letter->subject, ENT_QUOTES); ?>' />
 				</td>
 			</tr>
 			<tr>
 				<td>
 					Editable Text
 					<br />
-					<textarea id="ciceroletters_email_body" name='ciceroletters_email_body' style="width:200px;height:150px;"><?= str_replace("<br />", "\n", $letter->body); ?></textarea>
+					<textarea id="ciceroletters_email_body" name='ciceroletters_email_body' style="width:200px;height:150px;"><?= htmlspecialchars(str_replace("<br />", "\n", $letter->body), ENT_QUOTES); ?></textarea>
 					<br />
 					<small>If pasting from a word processor please save as plain text first.</small>
 				</td>

@@ -1162,7 +1162,7 @@ function ciceroletters_shortcode_func( $atts ) {
 		$output_message = ob_get_contents();
 		ob_end_clean();
 
-	}elseif($letter->type == "cicero"){
+	}elseif(isset($letter->type) && $letter->type == "cicero"){
 
 		// Create output
 		$output_message = "";
