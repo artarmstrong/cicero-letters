@@ -6,7 +6,7 @@
 
 // Include WordPress
 define('WP_USE_THEMES', false);
-//require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
+//require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 // Globals
@@ -18,12 +18,12 @@ $letter = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."ciceroletters WHERE `id
 if($letter != null) {
 
     // Change this to post elements
-    $names = mysql_real_escape_string($_POST['names']);
+    $names = $_POST['names'];
     $names = explode(",", $names);
-    $to = mysql_real_escape_string($_POST['to']);
+    $to = $_POST['to'];
     $to = explode(",", $to);
-    $from = mysql_real_escape_string($_POST['email']);
-    $subject = mysql_real_escape_string($_POST['subject']);
+    $from = $_POST['email'];
+    $subject = stripslashes($_POST['subject']);
     if( (is_array($to) && count($to) > 0) && (is_array($names) && count($names) > 0) ){
 
       // Send to multiple people
