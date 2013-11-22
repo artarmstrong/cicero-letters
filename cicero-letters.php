@@ -29,6 +29,8 @@ ini_set('display_errors', '1');
 
 // Constants
 global $wpdb;
+global $ciceroletters_db_version;
+$ciceroletters_db_version = "1.1";
 
 // Pages
 define('CICEROLETTERS_PAGE_HOME', admin_url("/admin.php?page=ciceroletters"));
@@ -40,18 +42,31 @@ define('CICEROLETTERS_DB', $wpdb->prefix.'ciceroletters');
 
 // Actions
 add_action('admin_menu', 'ciceroletters_add_pages');
+add_action('plugins_loaded', 'ciceroletters_update_db_check' );
 
 // Hooks
 register_activation_hook( __FILE__, 'ciceroletters_install' );
 register_deactivation_hook( __FILE__, 'ciceroletters_uninstall' );
 
+// ciceroletters_update_db_check() update the database on version change
+function ciceroletters_update_db_check() {
+    global $ciceroletters_db_version;
+    if (get_site_option( 'ciceroletters_db_version' ) != $ciceroletters_db_version) {
+        ciceroletters_install();
+    }
+}
+
 // ciceroletters_install() creates the database structure
 function ciceroletters_install() {
 
 	global $wpdb;
+	global $ciceroletters_db_version;
+	$installed_ver = get_option( "ciceroletters_db_version" );
+
+  if( $installed_ver != $ciceroletters_db_version ) {
 
     //Create table
-    $structure = "CREATE TABLE IF NOT EXISTS `".CICEROLETTERS_DB."` (
+    $sql = "CREATE TABLE IF NOT EXISTS `".CICEROLETTERS_DB."` (
     `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `type` enum('cicero','manual') NOT NULL,
     `test` enum('true','false') NOT NULL default 'false',
@@ -70,7 +85,14 @@ function ciceroletters_install() {
     `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
     `created` timestamp NOT NULL default '0000-00-00 00:00:00'
     );";
-    $wpdb->query($structure);
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+    //$wpdb->query($structure);
+
+    // Add Version Option
+    add_option( "ciceroletters_db_version", $ciceroletters_db_version );
+
+  }
 
 }
 
