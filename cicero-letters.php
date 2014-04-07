@@ -29,6 +29,8 @@ ini_set('display_errors', '1');
 
 // Constants
 global $wpdb;
+global $ciceroletters_db_version;
+$ciceroletters_db_version = "1.1";
 
 // Pages
 define('CICEROLETTERS_PAGE_HOME', admin_url("/admin.php?page=ciceroletters"));
@@ -40,18 +42,31 @@ define('CICEROLETTERS_DB', $wpdb->prefix.'ciceroletters');
 
 // Actions
 add_action('admin_menu', 'ciceroletters_add_pages');
+add_action('plugins_loaded', 'ciceroletters_update_db_check' );
 
 // Hooks
 register_activation_hook( __FILE__, 'ciceroletters_install' );
 register_deactivation_hook( __FILE__, 'ciceroletters_uninstall' );
 
+// ciceroletters_update_db_check() update the database on version change
+function ciceroletters_update_db_check() {
+    global $ciceroletters_db_version;
+    if (get_site_option( 'ciceroletters_db_version' ) != $ciceroletters_db_version) {
+        ciceroletters_install();
+    }
+}
+
 // ciceroletters_install() creates the database structure
 function ciceroletters_install() {
 
 	global $wpdb;
+	global $ciceroletters_db_version;
+	$installed_ver = get_option( "ciceroletters_db_version" );
+
+  if( $installed_ver != $ciceroletters_db_version ) {
 
     //Create table
-    $structure = "CREATE TABLE IF NOT EXISTS `".CICEROLETTERS_DB."` (
+    $sql = "CREATE TABLE IF NOT EXISTS `".CICEROLETTERS_DB."` (
     `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `type` enum('cicero','manual') NOT NULL,
     `test` enum('true','false') NOT NULL default 'false',
@@ -70,7 +85,14 @@ function ciceroletters_install() {
     `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
     `created` timestamp NOT NULL default '0000-00-00 00:00:00'
     );";
-    $wpdb->query($structure);
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+    //$wpdb->query($structure);
+
+    // Add Version Option
+    add_option( "ciceroletters_db_version", $ciceroletters_db_version );
+
+  }
 
 }
 
@@ -339,15 +361,15 @@ function ciceroletters_admin_home() {
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Test Email</strong></td>
-								<td><input type="text" name="page_test_email" id="page_test_email" style="width:300px;" value="<?= (isset($_POST['page_test_email'])?$_POST['page_test_email']:$letter->test_email); ?>" /></td>
+								<td><input type="text" name="page_test_email" id="page_test_email" style="width:300px;" value="<?= (isset($_POST['page_test_email'])?htmlspecialchars(stripslashes($_POST['page_test_email']), ENT_QUOTES):stripslashes($letter->test_email)); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Success Message</strong></td>
-								<td><input type="text" name="page_success" id="page_success" style="width:400px;" value="<?= (isset($_POST['page_success'])?$_POST['page_success']:$letter->success_message); ?>" /></td>
+								<td><input type="text" name="page_success" id="page_success" style="width:400px;" value="<?= (isset($_POST['page_success'])?htmlspecialchars(stripslashes($_POST['page_success']), ENT_QUOTES):stripslashes($letter->success_message)); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Error Message</strong></td>
-								<td><input type="text" name="page_error" id="page_error" style="width:400px;" value="<?= (isset($_POST['page_error'])?$_POST['page_error']:$letter->error_message); ?>" /></td>
+								<td><input type="text" name="page_error" id="page_error" style="width:400px;" value="<?= (isset($_POST['page_error'])?htmlspecialchars(stripslashes($_POST['page_error']), ENT_QUOTES):stripslashes($letter->error_message)); ?>" /></td>
 							</tr>
 
 							</tbody>
@@ -369,7 +391,7 @@ function ciceroletters_admin_home() {
                   <small>Separate each recipient email with a comma.</small>
 								</td>
 								<td>
-								  <textarea name="email_recipient" id="email_recipient" style="width:300px;height:100px;"><?= (isset($_POST['email_recipient'])?$_POST['email_recipient']:$letter->recipient); ?></textarea>
+								  <textarea name="email_recipient" id="email_recipient" style="width:300px;height:100px;"><?= (isset($_POST['email_recipient'])?htmlspecialchars(stripslashes($_POST['email_recipient']), ENT_QUOTES):stripslashes($letter->recipient)); ?></textarea>
 								</td>
 							</tr>
 							<tr class="form-field" id="email_recipient_name_container" <?= (isset($_POST['page_type']) ? ($_POST['page_type'] == "cicero" ? 'style="display:none;"' : "") : ($letter->type == "cicero" ? 'style="display:none;"' : "")); ?>>
@@ -378,24 +400,24 @@ function ciceroletters_admin_home() {
                   <small>Separate each recipient name with a comma.</small>
                 </td>
 								<td>
-								  <textarea name="email_recipient_name" id="email_recipient_name" style="width:300px;height:100px;"><?= (isset($_POST['email_recipient_name'])?$_POST['email_recipient_name']:$letter->recipient_name); ?></textarea>
+								  <textarea name="email_recipient_name" id="email_recipient_name" style="width:300px;height:100px;"><?= (isset($_POST['email_recipient_name'])?htmlspecialchars(stripslashes($_POST['email_recipient_name']), ENT_QUOTES):stripslashes($letter->recipient_name)); ?></textarea>
 								</td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Subject</strong></td>
-								<td><input type="text" name="email_subject" id="email_subject" style="width:400px;" value="<?= (isset($_POST['email_subject'])?$_POST['email_subject']:$letter->subject); ?>" /></td>
+								<td><input type="text" name="email_subject" id="email_subject" style="width:400px;" value="<?= (isset($_POST['email_subject'])?htmlspecialchars(stripslashes($_POST['email_subject']), ENT_QUOTES):stripslashes($letter->subject)); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Body</strong></td>
-								<td><textarea name="email_body" id="email_body" rows="8"><?= (isset($_POST['email_body'])?$_POST['email_body']:$letter->body); ?></textarea></td>
+								<td><textarea name="email_body" id="email_body" rows="8"><?= (isset($_POST['email_body'])?htmlspecialchars(stripslashes($_POST['email_body']), ENT_QUOTES):stripslashes($letter->body)); ?></textarea></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>BCC Email</strong></td>
-								<td><input type="text" name="email_bcc_email" id="email_bcc_email" style="width:300px;" value="<?= (isset($_POST['email_bcc_email'])?$_POST['email_bcc_email']:$letter->bcc_email); ?>" /></td>
+								<td><input type="text" name="email_bcc_email" id="email_bcc_email" style="width:300px;" value="<?= (isset($_POST['email_bcc_email'])?htmlspecialchars(stripslashes($_POST['email_bcc_email']), ENT_QUOTES):stripslashes($letter->bcc_email)); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>BCC Page Note</strong></td>
-								<td><textarea name="email_bcc_note" id="email_bcc_note" style="width:450px;height:50px;"><?= (isset($_POST['email_bcc_note'])?$_POST['email_bcc_note']:$letter->bcc_note); ?></textarea></td>
+								<td><textarea name="email_bcc_note" id="email_bcc_note" style="width:450px;height:50px;"><?= (isset($_POST['email_bcc_note'])?htmlspecialchars(stripslashes($_POST['email_bcc_note']), ENT_QUOTES):stripslashes($letter->bcc_note)); ?></textarea></td>
 							</tr>
 
 							</tbody>
@@ -817,15 +839,15 @@ function ciceroletters_admin_add() {
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Test Email</strong></td>
-								<td><input type="text" name="page_test_email" id="page_test_email" style="width:300px;" value="<?= (isset($_POST['page_test_email'])?$_POST['page_test_email']:""); ?>" /></td>
+								<td><input type="text" name="page_test_email" id="page_test_email" style="width:300px;" value="<?= (isset($_POST['page_test_email'])?htmlspecialchars(stripslashes($_POST['page_test_email']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Success Message</strong></td>
-								<td><input type="text" name="page_success" id="page_success" style="width:400px;" value="<?= (isset($_POST['page_success'])?$_POST['page_success']:""); ?>" /></td>
+								<td><input type="text" name="page_success" id="page_success" style="width:400px;" value="<?= (isset($_POST['page_success'])?htmlspecialchars(stripslashes($_POST['page_success']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Error Message</strong></td>
-								<td><input type="text" name="page_error" id="page_error" style="width:400px;" value="<?= (isset($_POST['page_error'])?$_POST['page_error']:""); ?>" /></td>
+								<td><input type="text" name="page_error" id="page_error" style="width:400px;" value="<?= (isset($_POST['page_error'])?htmlspecialchars(stripslashes($_POST['page_error']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 
 							</tbody>
@@ -843,27 +865,27 @@ function ciceroletters_admin_add() {
 
 							<tr class="form-field" id="email_recipient_container" <?= (isset($_POST['page_type']) && $_POST['page_type'] == "manual" ? "" : "style='display:none;'"); ?>>
 								<td valign="top" scope="row" width="180"><strong>Recipient</strong></td>
-								<td><input type="text" name="email_recipient" id="email_recipient" style="width:300px;" value="<?= (isset($_POST['email_recipient'])?$_POST['email_recipient']:""); ?>" /></td>
+								<td><input type="text" name="email_recipient" id="email_recipient" style="width:300px;" value="<?= (isset($_POST['email_recipient'])?htmlspecialchars(stripslashes($_POST['email_recipient']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 							<tr class="form-field" id="email_recipient_name_container" <?= (isset($_POST['page_type']) && $_POST['page_type'] == "manual" ? "" : "style='display:none;'"); ?>>
 								<td valign="top" scope="row" width="180"><strong>Recipient Name</strong></td>
-								<td><input type="text" name="email_recipient_name" id="email_recipient_name" style="width:300px;" value="<?= (isset($_POST['email_recipient_name'])?$_POST['email_recipient_name']:""); ?>" /></td>
+								<td><input type="text" name="email_recipient_name" id="email_recipient_name" style="width:300px;" value="<?= (isset($_POST['email_recipient_name'])?htmlspecialchars(stripslashes($_POST['email_recipient_name']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Subject</strong></td>
-								<td><input type="text" name="email_subject" id="email_subject" style="width:400px;" value="<?= (isset($_POST['email_subject'])?$_POST['email_subject']:""); ?>" /></td>
+								<td><input type="text" name="email_subject" id="email_subject" style="width:400px;" value="<?= (isset($_POST['email_subject'])?htmlspecialchars(stripslashes($_POST['email_subject']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>Body</strong></td>
-								<td><textarea name="email_body" id="email_body" rows="8"><?= (isset($_POST['email_body'])?$_POST['email_body']:""); ?></textarea></td>
+								<td><textarea name="email_body" id="email_body" rows="8"><?= (isset($_POST['email_body'])?htmlspecialchars(stripslashes($_POST['email_body']), ENT_QUOTES):""); ?></textarea></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>BCC Email</strong></td>
-								<td><input type="text" name="email_bcc_email" id="email_bcc_email" style="width:300px;" value="<?= (isset($_POST['email_bcc_email'])?$_POST['email_bcc_email']:""); ?>" /></td>
+								<td><input type="text" name="email_bcc_email" id="email_bcc_email" style="width:300px;" value="<?= (isset($_POST['email_bcc_email'])?htmlspecialchars(stripslashes($_POST['email_bcc_email']), ENT_QUOTES):""); ?>" /></td>
 							</tr>
 							<tr class="form-field">
 								<td valign="top" scope="row"><strong>BCC Page Note</strong></td>
-								<td><textarea name="email_bcc_note" id="email_bcc_note" style="width:450px;height:50px;"><?= (isset($_POST['email_bcc_note'])?$_POST['email_bcc_note']:""); ?></textarea></td>
+								<td><textarea name="email_bcc_note" id="email_bcc_note" style="width:450px;height:50px;"><?= (isset($_POST['email_bcc_note'])?htmlspecialchars(stripslashes($_POST['email_bcc_note']), ENT_QUOTES):""); ?></textarea></td>
 							</tr>
 
 							</tbody>

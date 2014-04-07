@@ -7,7 +7,7 @@
 
 // Include WordPress
 define('WP_USE_THEMES', false);
-//require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
+//require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 // Function to do our API calls (returns object made from JSON)
@@ -85,33 +85,35 @@ if($letter->test == "true"){
     	//echo "</pre>";
 
     	//if(count($official_response->response->results->candidates) > 0){
-    	if(count($official_response->response->results->candidates[0]->officials) > 0){
+    	if(isset($official_response->response->results->candidates[0]->officials)){
+      	if(count($official_response->response->results->candidates[0]->officials) > 0){
 
-  	    //$officials_state_found = false;
+    	    //$officials_state_found = false;
 
-  	    // Print information for each official:
-        foreach($official_response->response->results->candidates[0]->officials as $o){
+    	    // Print information for each official:
+          foreach($official_response->response->results->candidates[0]->officials as $o){
 
-          // Get state district
-          if($letter->country == "USA-NA" || (isset($o->office->district->state) && $o->office->district->state == $letter->state)){
+            // Get state district
+            if($letter->country == "USA-NA" || (isset($o->office->district->state) && $o->office->district->state == $letter->state)){
 
-          	//$officials_state_same = false;
+            	//$officials_state_same = false;
 
-            // Get name and email and check for validity
-            foreach($o->email_addresses as $e){
-              $officials_array[$e] = $o->office->title." ".$o->first_name." ".$o->last_name;
-              $officials_emails[] = $e;
-              $officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
+              // Get name and email and check for validity
+              foreach($o->email_addresses as $e){
+                $officials_array[$e] = $o->office->title." ".$o->first_name." ".$o->last_name;
+                $officials_emails[] = $e;
+                $officials_names[] = $o->office->title." ".$o->first_name." ".$o->last_name;
 
-              // DEBUG
-              //echo "<pre>";
-              //print_r($officials_array);
-              //echo "</pre>";
+                // DEBUG
+                //echo "<pre>";
+                //print_r($officials_array);
+                //echo "</pre>";
 
-              break;
+                break;
+              }
             }
           }
-        }
+      	}
     	}
   	}
   }
@@ -150,14 +152,14 @@ if(!empty($officials_emails)){
 				<td>
 					Subject
 					<br />
-					<input type='text' id="ciceroletters_email_subject" name='ciceroletters_email_subject' style="width:200px;" value='<?= $letter->subject; ?>' />
+					<input type='text' id="ciceroletters_email_subject" name='ciceroletters_email_subject' style="width:200px;" value='<?= htmlspecialchars(stripslashes($letter->subject), ENT_QUOTES); ?>' />
 				</td>
 			</tr>
 			<tr>
 				<td>
 					Editable Text
 					<br />
-					<textarea id="ciceroletters_email_body" name='ciceroletters_email_body' style="width:200px;height:150px;"><?= str_replace("<br />", "\n", $letter->body); ?></textarea>
+					<textarea id="ciceroletters_email_body" name='ciceroletters_email_body' style="width:200px;height:150px;"><?= htmlspecialchars(stripslashes(str_replace("<br />", "\n", $letter->body)), ENT_QUOTES); ?></textarea>
 					<br />
 					<small>If pasting from a word processor please save as plain text first.</small>
 				</td>
