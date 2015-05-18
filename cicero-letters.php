@@ -30,15 +30,17 @@ ini_set('display_errors', '1');
 // Constants
 global $wpdb;
 global $ciceroletters_db_version;
-$ciceroletters_db_version = "1.1";
+$ciceroletters_db_version = "1.2";
 
 // Pages
 define('CICEROLETTERS_PAGE_HOME', admin_url("/admin.php?page=ciceroletters"));
 define('CICEROLETTERS_PAGE_ADD', admin_url("/admin.php?page=ciceroletters_add"));
 define('CICEROLETTERS_PAGE_HELP', admin_url("/admin.php?page=ciceroletters_help"));
+define('CICEROLETTERS_PAGE_REPORT', admin_url("/admin.php?page=ciceroletters_report"));
 
 // Database Tables
 define('CICEROLETTERS_DB', $wpdb->prefix.'ciceroletters');
+define('CICEROLETTERS_USERS_DB', $wpdb->prefix.'ciceroletters_users');
 
 // Actions
 add_action('admin_menu', 'ciceroletters_add_pages');
@@ -87,7 +89,16 @@ function ciceroletters_install() {
     );";
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
-    //$wpdb->query($structure);
+
+    //Create table
+    $sql = "CREATE TABLE IF NOT EXISTS `".CICEROLETTERS_USERS_DB."` (
+    `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `letter_id` int(11) NOT NULL,
+    `name` varchar(255) NOT NULL,
+    `email` varchar(255) NOT NULL,
+    `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+	  );";
+    dbDelta($sql);
 
     // Add Version Option
     add_option( "ciceroletters_db_version", $ciceroletters_db_version );
@@ -142,8 +153,8 @@ function ciceroletters_admin_home() {
 	  !empty($_GET['editid']) &&
 	  is_numeric($_GET['editid']) &&
 	  isset($_POST['edit-letter']) &&
-	  $_POST['edit-letter'] == "Submit" )
-    {
+	  $_POST['edit-letter'] == "Submit"
+  ){
 
   	// Error variables
   	$errors = array();
@@ -1039,9 +1050,34 @@ function ciceroletters_admin_add() {
 <?php
 }
 
-
 // ciceroletters_admin_help() displays the help page
 function ciceroletters_admin_help() {
+
+	global $wpdb;
+
+	?>
+
+	<div class="wrap">
+
+		<div id="icon-link-manager" class="icon32"><br></div>
+		<h2>Help</h2>
+
+		<fieldset style="border:1px solid #ccc;margin:0 0 10px 0;padding:0 10px 7px 20px;">
+
+			<legend><strong>How do I output the forms?</strong></legend>
+			<p>The way that the forms are outputted on the website is by the use of shortcodes. A shortcode is a small piece of code that will take a id for a letter and use that within the shortcode. The general layout of the shortcode will look like this:</p>
+			<p><em>[cicero id='123']</em></p>
+			<p>This can be found on the "Letters" screen and all that needs to be done is to copy the small bit of code and place it wherever you would like it in the page.</p>
+
+		</fieldset>
+
+	</div>
+
+<?
+}
+
+// ciceroletters_admin_report() displays the report for specified letter
+function ciceroletters_admin_report() {
 
 	global $wpdb;
 

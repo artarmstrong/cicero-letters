@@ -87,6 +87,21 @@ if($letter != null) {
       }
     }
 
+    // Insert person into report
+    $wpdb->insert(
+    	$wpdb->prefix.'ciceroletters_users',
+    	array(
+    		'letter_id' => $letter->id,
+    		'name' => $_POST['fname']." ".$_POST['lname'],
+    		'email' => $_POST['email']
+    	),
+    	array(
+    		'%d',
+    		'%s',
+    		'%s'
+    	)
+    );
+
 }else{
 
   echo "The letter could not be sent.";
