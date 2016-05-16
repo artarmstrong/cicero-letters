@@ -1,21 +1,14 @@
 <?php
-
-// Error Reporting
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
-
-// Include WordPress
 define('WP_USE_THEMES', false);
-//require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 // Globals
 global $wpdb;
 
 // Get letter
-$letter = $wpdb->get_row("SELECT * FROM ".$wpdb->prefix."ciceroletters WHERE `id` = ".mysql_real_escape_string($_POST['letterid'])." LIMIT 1;");
+$letter = $wpdb->get_row("SELECT * FROM " . $wpdb->prefix. "ciceroletters WHERE `id` = ".$_POST['letterid']." LIMIT 1;");
 
-if($letter != null) {
+if ($letter != null) {
 
     // Change this to post elements
     $names = $_POST['names'];
@@ -102,10 +95,8 @@ if($letter != null) {
     	)
     );
 
-}else{
-
-  echo "The letter could not be sent.";
-
+} else {
+    echo "The letter could not be sent.";
 }
 
 ?>

@@ -1,9 +1,6 @@
 <?php
 header('Content-type: text/javascript');
-
-// Include WordPress
 define('WP_USE_THEMES', false);
-//require($_SERVER['DOCUMENT_ROOT'].'/Here/wp-load.php');
 require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 ?>jQuery(document).ready(function($) {
