@@ -31,9 +31,13 @@ if ($letter != null) {
         $body = "
       	<html>
       	<body>
-      	<p>Dear ".stripslashes($recipient_name_out)."</p>
+      	<p>Dear ".stripslashes($recipient_name_out).",</p>
       	<p>".str_replace("\n", "<br />", stripslashes($_POST['body']))."</p>
-      	<p>Sincerely,<br />".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."</p>
+      	<p>
+    	    Sincerely,<br />
+    	    ".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."<br />
+    	    ".stripslashes($_POST['city']).", ".stripslashes($_POST['state'])."
+        </p>
       	</body>
       	</html>";
         $headers  = "From: $from\r\n";
@@ -63,9 +67,13 @@ if ($letter != null) {
       $body = "
     	<html>
     	<body>
-    	<p>Dear ".stripslashes($names)."</p>
+    	<p>Dear ".stripslashes($names).",</p>
     	<p>".str_replace("\n", "<br />", stripslashes($_POST['body']))."</p>
-    	<p>Sincerely,<br />".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."</p>
+    	<p>
+    	    Sincerely,<br />
+    	    ".stripslashes($_POST['fname'])." ".stripslashes($_POST['lname'])."<br />
+    	    ".stripslashes($_POST['city']).", ".stripslashes($_POST['state'])."
+        </p>
     	</body>
     	</html>";
       $headers  = "From: $from\r\n";

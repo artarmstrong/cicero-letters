@@ -62,50 +62,31 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
     var ciceroletters_email_to = $("input#ciceroletters_email_to").val();
     var ciceroletters_email_to_names = $("input#ciceroletters_email_to_names").val();
     var ciceroletters_email_bcc_email = $("input#ciceroletters_email_bcc_email").val();
+
     var ciceroletters_email_subject = $("input#ciceroletters_email_subject").val();
-    if (ciceroletters_email_subject == "") {
-    	$("#ciceroletters_email_subject_error").show();
-    	$("input#ciceroletters_email_subject").focus();
-    	return false;
-    }
-
     var ciceroletters_email_body = $("#ciceroletters_email_body").val();
-    if (ciceroletters_email_body == "") {
-    	$("#ciceroletters_email_body_error").show();
-    	$("input#ciceroletters_email_body").focus();
-    	return false;
-    }
-
     var ciceroletters_email_fname = $("input#ciceroletters_email_fname").val();
-    if (ciceroletters_email_fname == "") {
-    	$("#ciceroletters_email_fname_error").show();
-    	$("input#ciceroletters_email_fname").focus();
-    	return false;
-    }
-
     var ciceroletters_email_lname = $("input#ciceroletters_email_lname").val();
-    if (ciceroletters_email_lname == "") {
-    	$("#ciceroletters_email_lname_error").show();
-    	$("input#ciceroletters_email_lname").focus();
-    	return false;
-    }
-
     var ciceroletters_email_email = $("input#ciceroletters_email_email").val();
-    if (ciceroletters_email_email == "") {
-    	$("#ciceroletters_email_email_error").show();
-    	$("input#ciceroletters_email_email").focus();
-    	return false;
-    }
-
     var ciceroletters_email_city = $("input#ciceroletters_email_city").val();
-    if (ciceroletters_email_city == "") {
-    	$("#ciceroletters_email_city_error").show();
-    	$("input#ciceroletters_email_city").focus();
-      return false;
+    var ciceroletters_email_state = $("select#ciceroletters_email_state").val();
+
+    if (ciceroletters_email_subject == "" ||
+        ciceroletters_email_body    == "" ||
+        ciceroletters_email_fname   == "" ||
+        ciceroletters_email_lname   == "" ||
+        ciceroletters_email_email   == "" ||
+        ciceroletters_email_city    == "" ||
+        ciceroletters_email_state   == ""
+    ) {
+    	$('#ciceroletters_loading_container').hide();
+    	$('#ciceroletters_email_container').show();
+    	$("#ciceroletters_error").show();
+    	return false;
     }
 
     // send form to ajax
-    var dataString = 'to='+ciceroletters_email_to+'&bccemail='+ciceroletters_email_bcc_email+'&subject='+ciceroletters_email_subject+'&body='+ciceroletters_email_body+'&fname='+ciceroletters_email_fname+'&lname='+ciceroletters_email_lname+'&email='+ciceroletters_email_email+'&city='+ciceroletters_email_city+'&letterid='+ciceroletters_email_letter_id+'&blogid='+ciceroletters_email_blog_id+'&names='+ciceroletters_email_to_names;
+    var dataString = 'to='+ciceroletters_email_to+'&bccemail='+ciceroletters_email_bcc_email+'&subject='+ciceroletters_email_subject+'&body='+ciceroletters_email_body+'&fname='+ciceroletters_email_fname+'&lname='+ciceroletters_email_lname+'&email='+ciceroletters_email_email+'&city='+ciceroletters_email_city+'&state='+ciceroletters_email_state+'&letterid='+ciceroletters_email_letter_id+'&blogid='+ciceroletters_email_blog_id+'&names='+ciceroletters_email_to_names;
     $.ajax({
 	    type: "POST",
 	    url: "<?= plugins_url(); ?>/cicero-letters/_php/ajax-send-email.php",
